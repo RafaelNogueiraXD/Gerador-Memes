@@ -1,0 +1,15 @@
+Compilação bem-sucedida!
+1 : 0*1 , 0*2
+2 : 1*2 , 1*3
+3 : 2*3 , 2*4
+4 : 3*4 , 3*5
+5 : 4*5 , 4*6
+6 : 5*6 , 5*7
+7 : 6*7 , 6*8
+8 : 7*8 , 7*9
+9 : 8*9 , 8*10
+10 : 9*10 , 9*11
+Salvando imagem
+
+
+vamos tentar uma função para uma imagem em especifico, imagine uma imagem com fundo branco e escrito nela os seguintes caracteres "0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z" nota-se que cada caracter tem um espaço entre si,agora nós precisamos desenvolver uma ou mais funções para manipular essa imagem, com objetivo de recortar um determinado caracter e por em cima de outra imagem, exemplo, digamos que nós digitamos "BMW", será recortada dessa imagem o "B", "M", "W" e será colada essa letras na imagem que queremos(sempre reaproveitando as funções que já temos na classe),percebe-se que isso é importante pois ao conseguirmos manipular os caracteres dessa imagem, podemos escrever em qualquer outra.
