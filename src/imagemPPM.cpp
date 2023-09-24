@@ -189,64 +189,107 @@ void ImagemPPM::recortarImagem(int x_inicial, int y_inicial, int x_final, int y_
 vector<int> ImagemPPM::getPixel(int y, int x) const {
     return pixels[y][x];
 }
+vector<int> ImagemPPM::gerarCorSombra() {
+    cout << "gerando sombra" << endl;
+    vector<int> corSombra(3);
+    vector<int> corTexto  = getCorDeTexto();
 
+    // Se a cor do texto é predominantemente vermelha
+    if (corTexto[0] > corTexto[1] && corTexto[0] > corTexto[2]) {
+        corSombra = {255, 179, 179};
+    }
+    // Se a cor do texto é predominantemente verde
+    else if (corTexto[1] > corTexto[0] && corTexto[1] > corTexto[2]) {
+        corSombra = {179, 255, 179};
+    }
+    // Se a cor do texto é predominantemente azul
+    else if (corTexto[2] > corTexto[0] && corTexto[2] > corTexto[1]) {
+        corSombra = {179, 179, 255};
+    }
+    // Caso contrário, use uma sombra cinza padrão
+    else {
+        corSombra = {179, 179, 179};
+    }
+
+    return corSombra;
+}
 void ImagemPPM::escreverTexto(const string& texto, int x_inicial, int y_inicial, int tamanhoLetra) {
-    int x_atual = x_inicial;
-    int y_atual = y_inicial;
+    int sombra = 0;
+    vector<int> corOriginal = getCorDeTexto();
+    while (sombra < 2){
+        if(sombra == 0){
+            x_inicial += 5;
+            y_inicial += 5;
+        }else{
+            x_inicial -= 5;
+            y_inicial -= 5;
+        }
+        int x_atual = x_inicial;
+        int y_atual = y_inicial;
 
-    int caracteresNaLinhaAtual = 0;
-    int maxCaracteresPorLinha = this->getLargura()/50;
-    for (char c : texto) {
-        string caminho;
-        if (isalpha(c)) {
-            if (isupper(c)) {
-                caminho = "assets/caracteres/maiuscula/" + string(1, c) + ".ppm";
+        int caracteresNaLinhaAtual = 0;
+        int maxCaracteresPorLinha = this->getLargura()/50;
+        for (char c : texto) {
+            string caminho;
+            if (isalpha(c)) {
+                if (isupper(c)) {
+                    caminho = "assets/caracteres/maiuscula/" + string(1, c) + ".ppm";
+                } else {
+                    caminho = "assets/caracteres/minuscula/" + string(1, c) + ".ppm";
+                }
+            } else if (ispunct(c)) {
+                caminho = "assets/caracteres/pontuacao/" + string(1, c) + ".ppm";
             } else {
-                caminho = "assets/caracteres/minuscula/" + string(1, c) + ".ppm";
+                // Espaço ou outro caractere não suportado
+                x_atual += tamanhoLetra; // Ajusta a posição x para o próximo caractere
+                continue;
             }
-        } else if (ispunct(c)) {
-            caminho = "assets/caracteres/pontuacao/" + string(1, c) + ".ppm";
-        } else {
-            // Espaço ou outro caractere não suportado
-            x_atual += tamanhoLetra; // Ajusta a posição x para o próximo caractere
-            continue;
-        }
-        if (caracteresNaLinhaAtual >= maxCaracteresPorLinha || c == '\n') {
-            y_atual += 100;  // Move para a próxima linha
-            x_atual = x_inicial;  // Reinicia a posição x
-            caracteresNaLinhaAtual = 0;  // Reinicia a contagem de caracteres
+            if (caracteresNaLinhaAtual >= maxCaracteresPorLinha || c == '\n') {
+                y_atual += 100;  // Move para a próxima linha
+                x_atual = x_inicial;  // Reinicia a posição x
+                caracteresNaLinhaAtual = 0;  // Reinicia a contagem de caracteres
+            }
 
-            // Expande a imagem se necessário
-            // if (y_atual + 100 > getAltura()) {
-            //     expandirImagem(getAltura() + 100, getLargura());
-            // }
-        }
-
-        ImagemPPM letra(0,0);
-        if (letra.lerImagem(caminho)) {
-            // Aqui você pode redimensionar a imagem da letra para o tamanho desejado usando um método de redimensionamento que você pode adicionar à classe
-            // letra.redimensionar(tamanhoLetra, tamanhoLetra);
-            letra.setCorDeTexto(this->getCorDeTexto());
-            letra.mudarCorDePontoPreto();
-            for (int y = 0; y < letra.getAltura(); ++y) {
-                for (int x = 0; x < letra.getLargura(); ++x) {
-                    std::vector<int> pixel = letra.getPixel(y, x);
-                    // Verifique se o pixel da letra NÃO é branco ou próximo de branco
-                    if (!(pixel[0] > 250 && pixel[1] > 250 && pixel[2] > 250)) {
-                        pixels[y_atual + y][x_atual + x] = pixel;
+            ImagemPPM letra(0,0);
+            if (letra.lerImagem(caminho)) {
+                // Aqui você pode redimensionar a imagem da letra para o tamanho desejado usando um método de redimensionamento que você pode adicionar à classe
+                // letra.redimensionar(tamanhoLetra, tamanhoLetra);
+                if(sombra == 0)
+                    letra.setCorDeTexto(this->gerarCorSombra());
+                else letra.setCorDeTexto(corOriginal);
+                letra.mudarCorDePontoPreto();
+                if(sombra == 0){
+                    for(int i = 0; i <10 ; i++)
+                        letra.aplicarFiltroGaussiano();
+                }
+            
+                for (int y = 0; y < letra.getAltura(); ++y) {
+                    for (int x = 0; x < letra.getLargura(); ++x) {
+                        vector<int> pixel = letra.getPixel(y, x);
+                        // Verifique se o pixel da letra NÃO é branco ou próximo de branco
+                        if(sombra == 0){
+                            if (!(pixel[0] > 179 && pixel[1] > 179 && pixel[2] > 179)) {
+                                pixels[y_atual + y][x_atual + x] = pixel;
+                            }
+                        }else{
+                            if (!(pixel[0] > 130 && pixel[1] > 130 && pixel[2] > 130)) {
+                                pixels[y_atual + y][x_atual + x] = pixel;
+                            }
+                        }
                     }
                 }
-            }
-            // this->sobreporImagem(letra, x_atual, y_atual);
+                // this->sobreporImagem(letra, x_atual, y_atual);
             
-            
-            x_atual += letra.getLargura() + 5; // Ajusta a posição x para o próximo caractere
+                x_atual += letra.getLargura() + 5; // Ajusta a posição x para o próximo caractere
 
-        } else {
-            cerr << "Não foi possível ler o arquivo: " << caminho << endl;
+            } else {
+                cerr << "Não foi possível ler o arquivo: " << caminho << endl;
+            }
+            caracteresNaLinhaAtual++;
         }
-        caracteresNaLinhaAtual++;
+        sombra++;
     }
+    
 }
 void ImagemPPM::mudarCorDePontoPreto() {
     for (int i = 0; i < altura; ++i) {

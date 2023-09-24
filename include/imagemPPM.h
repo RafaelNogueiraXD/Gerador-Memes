@@ -24,6 +24,8 @@ public:
     void recortarImagem(int x_inicial, int y_inicial, int x_final, int y_final);
     void recortarImagemVerticalmente(int x_inicial, int x_final);
    
+
+    vector<int> gerarCorSombra();
     void pintarImagem(const vector<int>& cor);
     void sobreporImagem(const ImagemPPM& imagemMenor, int x, int y);
     void expandirImagem(int novaAltura, int novaLargura);

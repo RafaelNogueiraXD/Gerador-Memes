@@ -1,5 +1,11 @@
 // #include <imagemPPM.h>
 #include <iostream>
+#include <random>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <vector>
+
 using namespace std;
 
 
@@ -21,6 +27,50 @@ void menuEdicao(){
     cout << "\t 3 - gere uma imagem Horizontamente Colorida" << endl;
     cout << "\t 4 - negativar imagem a imagem" << endl;
     cout << "\t 5 - pinte a imagem" << endl;
+}
+
+struct Dados {
+    vector<string> frases;
+    vector<string> arquivos;
+};
+
+Dados lerArquivo(const string& nomeArquivo) {
+    Dados dados;
+    ifstream arquivo(nomeArquivo);
+    string linha;
+    int contador = 0;
+
+    if (arquivo.is_open()) {
+        while (getline(arquivo, linha)) {
+            contador++;
+            stringstream ss(linha);
+            string item;
+
+            // Se for a primeira ou terceira linha, ignora (são as linhas de descrição)
+            if (contador == 1 || contador == 3) {
+                continue;
+            }
+
+            // Se for a segunda linha, armazena as frases
+            if (contador == 2) {
+                while (getline(ss, item, ',')) {
+                    dados.frases.push_back(item);
+                }
+            }
+
+            // Se for a quarta linha, armazena os nomes dos arquivos
+            if (contador == 4) {
+                while (getline(ss, item, ',')) {
+                    dados.arquivos.push_back(item);
+                }
+            }
+        }
+        arquivo.close();
+    } else {
+        cout << "Não foi possível abrir o arquivo." << endl;
+    }
+
+    return dados;
 }
 int calculoLetras(int numAscii){
     int resultado = 0;

@@ -1,0 +1,4 @@
+frases:
+fra1,frase 2 ,frase 3
+arquivo:
+image1.ppm,image2.ppm,image3.ppm
