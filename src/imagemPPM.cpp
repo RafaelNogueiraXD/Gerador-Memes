@@ -189,6 +189,34 @@ void ImagemPPM::recortarImagem(int x_inicial, int y_inicial, int x_final, int y_
 vector<int> ImagemPPM::getPixel(int y, int x) const {
     return pixels[y][x];
 }
+void ImagemPPM::aplicarMarcaDagua(const ImagemPPM& logotipo) {
+    // Verificar se as dimensões das imagens são compatíveis
+    if (this->getLargura() < logotipo.getLargura() || this->getAltura() < logotipo.getAltura()) {
+        cerr << "Erro: O logotipo é maior que a imagem de destino." << endl;
+        return;
+    }
+
+    for (int y = 0; y < logotipo.getAltura(); ++y) {
+        for (int x = 0; x < logotipo.getLargura(); ++x) {
+            vector<int> pixelLogotipo = logotipo.getPixel(y, x);
+
+            // Verificar se o pixel é branco
+            if (pixelLogotipo[0] > 250 && pixelLogotipo[1] > 250 && pixelLogotipo[2] > 250) {
+                vector<int> pixelDestino = this->getPixel(y, x);
+
+                // Calcular a média ponderada
+                vector<int> novoPixel(3);
+                for (int i = 0; i < 3; ++i) {
+                    novoPixel[i] = 0.5 * pixelDestino[i] + 0.5 * pixelLogotipo[i];
+                }
+
+                // Substituir o pixel na imagem de destino
+                this->setPixel(y, x, novoPixel);
+            }
+        }
+    }
+}
+
 vector<int> ImagemPPM::gerarCorSombra() {
     cout << "gerando sombra" << endl;
     vector<int> corSombra(3);
@@ -239,9 +267,14 @@ void ImagemPPM::escreverTexto(const string& texto, int x_inicial, int y_inicial,
                 }
             } else if (ispunct(c)) {
                 caminho = "assets/caracteres/pontuacao/" + string(1, c) + ".ppm";
+            
+            } else if (isdigit(c)) {
+                caminho = "assets/caracteres/numeros/" + string(1, c) + ".ppm";
             } else {
                 // Espaço ou outro caractere não suportado
-                x_atual += tamanhoLetra; // Ajusta a posição x para o próximo caractere
+                if((caracteresNaLinhaAtual + 1)  < maxCaracteresPorLinha) 
+                    x_atual += tamanhoLetra; 
+                // Ajusta a posição x para o próximo caractere
                 continue;
             }
             if (caracteresNaLinhaAtual >= maxCaracteresPorLinha || c == '\n') {

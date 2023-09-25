@@ -21,7 +21,7 @@ g++ $OBJ_DIR/*.o -o $BIN_DIR/meu_programa
 # Informa se a compilação foi bem-sucedida
 if [ $? -eq 0 ]; then
     echo "Compilação bem-sucedida!"
-    bin/meu_programa "nova" 'TESTE 2'
+    bin/meu_programa
 else
     echo "Erro na compilação!"
 fi

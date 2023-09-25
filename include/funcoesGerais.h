@@ -28,6 +28,7 @@ void menuEdicao(){
     cout << "\t 4 - negativar imagem a imagem" << endl;
     cout << "\t 5 - pinte a imagem" << endl;
 }
+/*
 
 struct Dados {
     vector<string> frases;
@@ -72,6 +73,7 @@ Dados lerArquivo(const string& nomeArquivo) {
 
     return dados;
 }
+*/
 int calculoLetras(int numAscii){
     int resultado = 0;
     if(numAscii > 47 && numAscii < 58){

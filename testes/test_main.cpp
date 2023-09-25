@@ -2,74 +2,56 @@
 #include "funcoesGerais.h"
 #include <iostream>
 #include <random>
+#include <string>
 using namespace std;
 
-int main() {
-    // ImagemPPM imagemColorida(800 , 200, {255, 255, 255});
-    // imagemColorida.mostraValoresBasicos();
-    // // imagemColorida.colorirRandomVertical(5);
-    // imagemColorida.colorirRandomVertical(10);
-    // imagemColorida.salvar("assets/imagemColorida.ppm");
-    // teste funcional 1
-    
-   
-    // int op = 0;
-    // int xInit, yInit, xF, yF;
-    // int xI, xf;
-    // string caminho;
-    // // 69 caaracters
-    // //48 pra todos os numeros, começando em 10
-    // ImagemPPM imagemUsuario(0 , 0);
-    // imagemUsuario.lerImagem("assets/impactfont.ppm");
-    // imagemUsuario.recortarImagemVerticalmente(46*9,48*10);
+int verificaFinal(const std::string& str) {
+    if (str.size() < 4) {
+        return 1;
+    }
+    std::string final = str.substr(str.size() - 4);
+    if (final == ".ppm") {
+        return 0;
+    } else {
+        return 1;
+    }
+}
 
-    // imagemUsuario.salvar("assets/1.ppm");
+bool arquivoExiste(const std::string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo.c_str());
+    return arquivo.good();
+}
 
-
-/*
-    do{
-        menu();
-        cin >> op;
-        switch(op){
-        case 1:
-        cout << "ok" << endl;
-            break;
-        case 2: 
-            cin >> xI;
-            cin >> xF;
-            imagemUsuario.recortarImagemVerticalmente(xI, xF);
-        break;
-        case 3:
-            cin >> caminho;
-            imagemUsuario.salvar(caminho);
-        break;
-        case 4:
-            imagemUsuario.lerImagem("assets/impactfont.ppm");        break;
-        default:
-            cout << "opcao invalida" << endl;
-            break;
+int main(int argc, char* argv[]) {
+    string pathOriginal = "assets/original/";
+    string path = "assets/imageTest/";
+    string res,res2;
+    string arquivo = argv[1];
+    string  frase = argv[2];
+    if(!arquivo.empty() && arquivo != " " && verificaFinal(arquivo) != 1) {
+        res = pathOriginal + arquivo;
+        if (arquivoExiste(res)) {
+            ImagemPPM* image = new ImagemPPM(0,0,{0,0,0});
+            image->lerImagem(res);
+            image->escreverTexto(frase, 50, 50 , 50);
+            res2 = path + frase + arquivo;
+            image->salvar(res2);
+            delete image;    
+            // cout << "ja feito" << endl;
+        }else {
+            cout << "criando Imagem" << endl;
+            random_device rd;  // Dispositivo de geração de números aleatórios
+            mt19937 gen(rd());  // Gerador Mersenne Twister
+            uniform_int_distribution<> distrib(60, 255);  // Distribuição uniforme entre 0 e 99
+            ImagemPPM* image = new ImagemPPM(800,400,{distrib(gen),distrib(gen),distrib(gen)});
+            image->salvar(res);
+            image->setCorDeTexto({0,0,0});
+            image->escreverTexto(frase, 50, 50 , 50);
+            res2 = path + frase + arquivo;
+            image->salvar(res2);
+            delete image;    
         }
-    }while( op == 0);    
-*/
-    //cortando verticalmente
-    // imagemColorida.recortarImagem(0,0,imagemColorida.calculoPorcetagem(10,0) - 1,imagemColorida.getAltura()-1);
-    //cortando horizontamente
-    // imagemColorida.recortarImagem(0,0,imagemColorida.getLargura() - 1,imagemColorida.calculoPorcetagem(20,1) - 1);
-    // imagemColorida.salvar("assets/imagemColoridaRecortada.ppm");
-
-    // ImagemPPM imagemVerde(100 , 100, {0 , 0 , 0});
-    // imagemVerde.mostraValoresBasicos();
-
-    // imagemVermelha.sobreporImagem(imagemVerde, imagemVermelha.calculoPorcetagem(10, "Horizontal"), imagemVermelha.calculoPorcetagem(10, "vertical"));
-    // imagemVermelha.salvar("assets/resultado.ppm");
-    // // criando verde
-    // ImagemPPM imagem(400, 200);
-    // cout << "Pintando Imagem" << endl;
-    // imagem.pintarImagem({0, 0, 255}); // Pinta toda a imagem de verde
-    // cout << "definindo pixel central" << endl;
-    // imagem.definirPixel(400, 300, {255, 0, 0}); // Define um pixel no centro como vermelho
-    // cout << "salvando . . . " << endl;
-    // imagem.salvar("assets/imagemAzul.ppm");
-
+    }   
+    // cout << "\n\tfim programa " << endl;
     return 0;
 }
