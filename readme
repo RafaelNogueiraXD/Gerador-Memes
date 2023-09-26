@@ -1,0 +1,9 @@
+A aplicação não precisa de imagem para funcionar, pois ela mesmo gera uma imagem caso o caminho da tal imagem não existe.
+
+para compilar corretamente a aplica usa-se o arquivo "build.sh", nele ja é feito um pequeno teste
+
+Para fins de teste foi gerado o arquivo teste.sh, ele é responsavel por fazer as 100 combinaçõoes(10 frases com 10 imagens)
+
+O arquivo data contém as frases e imagens.
+
+Se quiser por imagens, deve por na pasta "assets/original/" esse caminho foi definido para manter a integridade do arquivo original e separa de seu "MEME"

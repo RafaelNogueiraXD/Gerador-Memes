@@ -56,18 +56,18 @@ int ImagemPPM::lerImagem(const string& caminhoArquivo) {
     }
 
     string linha;
-    getline(arquivo, linha); // Lê a primeira linha (tipo de PPM)
-    // if (linha != linha) {
-    //     cout << linha << endl;
-    //     cerr << "Formato de arquivo não suportado!" << endl;
-    //     return 0;
-    // }
+    getline(arquivo, linha);
 
-    getline(arquivo, linha); // Lê a segunda linha (dimensões)
+
+
+
+
+
+    getline(arquivo, linha);
     istringstream iss(linha);
     iss >> largura >> altura;
 
-    getline(arquivo, linha); // Lê a terceira linha (valor máximo de cor)
+    getline(arquivo, linha);
 
     pixels.resize(altura, vector<vector<int>>(largura, vector<int>(3)));
 
@@ -78,7 +78,7 @@ int ImagemPPM::lerImagem(const string& caminhoArquivo) {
     }
 
     arquivo.close();
-    cout << "Lendo imagem..." << endl;
+
     return 1;
 }
 void ImagemPPM::mostraValoresBasicos(){
@@ -114,7 +114,7 @@ int ImagemPPM::calculoPorcetagem(int porcentagem,int direcao) {
 }
 void ImagemPPM::colorirRandomVertical(int intervalor){
     random_device rd;
-    // Inicializa um gerador de números pseudoaleatórios com uma semente gerada a partir do gerador de números aleatórios
+
     mt19937 gen(rd());
     uniform_int_distribution<> dis(0, 255);
 
@@ -136,9 +136,9 @@ void ImagemPPM::recortarImagemVerticalmente(int x_inicial, int x_final){
 }
 void ImagemPPM::colorirRandomHorizontal(int intervalor){
     random_device rd;
-    // Inicializa um gerador de números pseudoaleatórios com uma semente gerada a partir do gerador de números aleatórios
+
     mt19937 gen(rd());
-    // Define uma distribuição uniforme que gera números inteiros entre 0 e 100
+
     uniform_int_distribution<> dis(0, 255);
 
     int acumulador = intervalor;
@@ -164,7 +164,7 @@ void ImagemPPM::pintarRegiao(int x_inicial, int y_inicial, int x_final, int y_fi
 }
 
 void ImagemPPM::recortarImagem(int x_inicial, int y_inicial, int x_final, int y_final) {
-    // Verifica se as coordenadas estão dentro dos limites
+
     if (x_inicial < 0 || y_inicial < 0 || x_final >= largura || y_final >= altura || 
         x_inicial > x_final || y_inicial > y_final) {
         cerr << "Coordenadas de recorte inválidas!" << endl;
@@ -189,29 +189,31 @@ void ImagemPPM::recortarImagem(int x_inicial, int y_inicial, int x_final, int y_
 vector<int> ImagemPPM::getPixel(int y, int x) const {
     return pixels[y][x];
 }
+
+
 void ImagemPPM::aplicarMarcaDagua(const ImagemPPM& logotipo) {
-    // Verificar se as dimensões das imagens são compatíveis
-    if (this->getLargura() < logotipo.getLargura() || this->getAltura() < logotipo.getAltura()) {
+
+    if (this->largura < logotipo.largura || this->altura < logotipo.altura) {
         cerr << "Erro: O logotipo é maior que a imagem de destino." << endl;
         return;
     }
 
-    for (int y = 0; y < logotipo.getAltura(); ++y) {
-        for (int x = 0; x < logotipo.getLargura(); ++x) {
-            vector<int> pixelLogotipo = logotipo.getPixel(y, x);
+    for (int y = 0; y < logotipo.altura; ++y) {
+        for (int x = 0; x < logotipo.largura; ++x) {
+            vector<int> pixelLogotipo = logotipo.pixels[y][x];
 
-            // Verificar se o pixel é branco
-            if (pixelLogotipo[0] > 250 && pixelLogotipo[1] > 250 && pixelLogotipo[2] > 250) {
-                vector<int> pixelDestino = this->getPixel(y, x);
+        
+            if (pixelLogotipo[0] > 200 && pixelLogotipo[1] > 200 && pixelLogotipo[2] > 200) {
+                vector<int> pixelDestino = this->pixels[y][x];
 
-                // Calcular a média ponderada
+            
                 vector<int> novoPixel(3);
                 for (int i = 0; i < 3; ++i) {
                     novoPixel[i] = 0.5 * pixelDestino[i] + 0.5 * pixelLogotipo[i];
                 }
 
-                // Substituir o pixel na imagem de destino
-                this->setPixel(y, x, novoPixel);
+            
+                this->pixels[y][x] = novoPixel;
             }
         }
     }
@@ -222,19 +224,19 @@ vector<int> ImagemPPM::gerarCorSombra() {
     vector<int> corSombra(3);
     vector<int> corTexto  = getCorDeTexto();
 
-    // Se a cor do texto é predominantemente vermelha
+
     if (corTexto[0] > corTexto[1] && corTexto[0] > corTexto[2]) {
         corSombra = {255, 179, 179};
     }
-    // Se a cor do texto é predominantemente verde
+
     else if (corTexto[1] > corTexto[0] && corTexto[1] > corTexto[2]) {
         corSombra = {179, 255, 179};
     }
-    // Se a cor do texto é predominantemente azul
+
     else if (corTexto[2] > corTexto[0] && corTexto[2] > corTexto[1]) {
         corSombra = {179, 179, 255};
     }
-    // Caso contrário, use uma sombra cinza padrão
+
     else {
         corSombra = {179, 179, 179};
     }
@@ -256,7 +258,7 @@ void ImagemPPM::escreverTexto(const string& texto, int x_inicial, int y_inicial,
         int y_atual = y_inicial;
 
         int caracteresNaLinhaAtual = 0;
-        int maxCaracteresPorLinha = this->getLargura()/50;
+        int maxCaracteresPorLinha = this->getLargura()/60;
         for (char c : texto) {
             string caminho;
             if (isalpha(c)) {
@@ -271,22 +273,23 @@ void ImagemPPM::escreverTexto(const string& texto, int x_inicial, int y_inicial,
             } else if (isdigit(c)) {
                 caminho = "assets/caracteres/numeros/" + string(1, c) + ".ppm";
             } else {
-                // Espaço ou outro caractere não suportado
-                if((caracteresNaLinhaAtual + 1)  < maxCaracteresPorLinha) 
-                    x_atual += tamanhoLetra; 
-                // Ajusta a posição x para o próximo caractere
+            
+                    if((caracteresNaLinhaAtual + 1)  < maxCaracteresPorLinha) {
+                        x_atual += tamanhoLetra; 
+                        caracteresNaLinhaAtual++; 
+                    }
                 continue;
             }
             if (caracteresNaLinhaAtual >= maxCaracteresPorLinha || c == '\n') {
-                y_atual += 100;  // Move para a próxima linha
-                x_atual = x_inicial;  // Reinicia a posição x
-                caracteresNaLinhaAtual = 0;  // Reinicia a contagem de caracteres
+                y_atual += 100; 
+                x_atual = x_inicial; 
+                caracteresNaLinhaAtual = 0; 
             }
 
             ImagemPPM letra(0,0);
             if (letra.lerImagem(caminho)) {
-                // Aqui você pode redimensionar a imagem da letra para o tamanho desejado usando um método de redimensionamento que você pode adicionar à classe
-                // letra.redimensionar(tamanhoLetra, tamanhoLetra);
+            
+            
                 if(sombra == 0)
                     letra.setCorDeTexto(this->gerarCorSombra());
                 else letra.setCorDeTexto(corOriginal);
@@ -299,7 +302,7 @@ void ImagemPPM::escreverTexto(const string& texto, int x_inicial, int y_inicial,
                 for (int y = 0; y < letra.getAltura(); ++y) {
                     for (int x = 0; x < letra.getLargura(); ++x) {
                         vector<int> pixel = letra.getPixel(y, x);
-                        // Verifique se o pixel da letra NÃO é branco ou próximo de branco
+                    
                         if(sombra == 0){
                             if (!(pixel[0] > 179 && pixel[1] > 179 && pixel[2] > 179)) {
                                 pixels[y_atual + y][x_atual + x] = pixel;
@@ -311,18 +314,18 @@ void ImagemPPM::escreverTexto(const string& texto, int x_inicial, int y_inicial,
                         }
                     }
                 }
-                // this->sobreporImagem(letra, x_atual, y_atual);
             
-                x_atual += letra.getLargura() + 5; // Ajusta a posição x para o próximo caractere
+            
+                x_atual += letra.getLargura() + 5;
 
             } else {
                 cerr << "Não foi possível ler o arquivo: " << caminho << endl;
             }
             caracteresNaLinhaAtual++;
+            cout << "escrevendo. . ." << endl;
         }
         sombra++;
     }
-    
 }
 void ImagemPPM::mudarCorDePontoPreto() {
     for (int i = 0; i < altura; ++i) {
@@ -361,9 +364,9 @@ vector<int> ImagemPPM::getCorDeTexto() const {
 }
 
 void ImagemPPM::expandirImagem(int novaAltura, int novaLargura) {
-    vector<vector<vector<int>>> novosPixels(novaAltura, vector<vector<int>>(novaLargura, vector<int>(3, 0)));  // Inicializa com pixels pretos
+    vector<vector<vector<int>>> novosPixels(novaAltura, vector<vector<int>>(novaLargura, vector<int>(3, 0))); 
 
-    // Copia os pixels existentes para a nova matriz
+
     for (int i = 0; i < altura; ++i) {
         for (int j = 0; j < largura; ++j) {
             novosPixels[i][j] = pixels[i][j];
@@ -378,13 +381,12 @@ void ImagemPPM::expandirImagem(int novaAltura, int novaLargura) {
 void ImagemPPM::aplicarNegativo() {
     for (int i = 0; i < altura; ++i) {
         for (int j = 0; j < largura; ++j) {
-            pixels[i][j][0] = 255 - pixels[i][j][0];  // Red
-            pixels[i][j][1] = 255 - pixels[i][j][1];  // Green
-            pixels[i][j][2] = 255 - pixels[i][j][2];  // Blue
+            pixels[i][j][0] = 255 - pixels[i][j][0]; 
+            pixels[i][j][1] = 255 - pixels[i][j][1]; 
+            pixels[i][j][2] = 255 - pixels[i][j][2]; 
         }
     }
 }
-//oi rafael tudo bem
 void ImagemPPM::aplicarFiltroGaussiano() {
     vector<vector<vector<int>>> imagemResultante = pixels;
 
